@@ -5,7 +5,14 @@ const {
   GUILD_ID
 } = process.env;
 
-const { Client, Collection, GatewayIntentBits, Routes } = require('discord.js');
+const { 
+  Client, 
+  Collection, 
+  GatewayIntentBits, 
+  Routes,
+  EmbedBuilder,
+  embedLength
+} = require('discord.js');
 const { REST }  = require('@discordjs/rest')
 
 const client = new Client({
@@ -60,7 +67,19 @@ async function main() {
                       "type": 1
                   }
               ]
-          }
+          },
+          {
+            "name": "alfajores",
+            "description": "celo testnet token",
+            "type": 2, // 2 is type SUB_COMMAND_GROUP
+            "options": [
+                {
+                    "name": "celo",
+                    "description": "Get 1 CELO tesnet tokens",
+                    "type": 1 // 1 is type SUB_COMMAND
+                }
+            ]
+        }
       ]
   }
     
@@ -82,12 +101,23 @@ main();
 
 
 client.on('interactionCreate', async interaction => {
+  const network = interaction.options.getSubcommandGroup();
+  const networkName = network.charAt(0).toUpperCase() + network.slice(1);
+  const testToken = interaction.options.getSubcommand();
+  let message = `1 ${testToken.toUpperCase()} ${testToken == 'link' ? '(chainlink)' : ''} test tokens transferred to address 0x `
   if (interaction.isChatInputCommand()) {
-    const network = interaction.options.getSubcommandGroup();
-    const testToken = interaction.options.getSubcommand();
-    console.log(network, testToken);
+    interaction.reply({ 
+      embeds: [new EmbedBuilder()
+        .setDescription(message)
+        .setColor('Aqua')
+        .setURL("https://goerli.etherscan.io/address/0xf36f155486299ecaff2d4f5160ed5114c1f66000")
+        .setTitle(`${networkName} Testnet Token Transfer `)
+
+      ]
+    });
+
     
-    interaction.reply({ content: `${testToken == 'eth' ? '1': ''} ${testToken == 'eth' ? 'ETH token' : 'LINK tokens'} transferred` });
+    
 
     sendTokens();
   }
