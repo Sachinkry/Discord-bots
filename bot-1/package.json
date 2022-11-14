@@ -1,4 +1,4 @@
-{
+ {
   "name": "discord-bots",
   "version": "1.0.0",
   "description": "",
@@ -15,6 +15,7 @@
     "discord-api-types": "^0.37.16",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
     "nodemon": "^2.0.20"
   }
 }

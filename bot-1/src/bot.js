@@ -2,29 +2,31 @@ require("dotenv").config();
 const { 
   token, 
   CLIENT_ID,  
-  GUILD_ID
+  GUILD_ID,
+  PRIVATE_KEY,
 } = process.env;
 
 const { 
-  Client, 
-  Collection, 
+  Client,
   GatewayIntentBits, 
   Routes,
   EmbedBuilder,
-  embedLength
+  
 } = require('discord.js');
 const { REST }  = require('@discordjs/rest')
 
+const { ethers, Wallet } = require('ethers');
+const {abi, CONTRACT_ADDRESS_GOERLI, } = require("../constants/index")
+
 const client = new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent,
-    ],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
 client.on('ready', () => console.log(`${client.user.username} has logged in!,`));
-
 
 const rest = new REST({version: '10'}).setToken(token);
 
@@ -104,7 +106,7 @@ client.on('interactionCreate', async interaction => {
   const network = interaction.options.getSubcommandGroup();
   const networkName = network.charAt(0).toUpperCase() + network.slice(1);
   const testToken = interaction.options.getSubcommand();
-  let message = `1 ${testToken.toUpperCase()} ${testToken == 'link' ? '(chainlink)' : ''} test tokens transferred to address 0x `
+  let message = `${testToken == 'link' ? '': 1} ${testToken.toUpperCase()} ${testToken == 'link' ? '(chainlink)' : ''} test tokens transferred to address 0x `
   if (interaction.isChatInputCommand()) {
     interaction.reply({ 
       embeds: [new EmbedBuilder()
@@ -116,15 +118,40 @@ client.on('interactionCreate', async interaction => {
       ]
     });
 
-    
-    
-
     sendTokens();
   }
 });
-function sendTokens() {
-  console.log('transferred!');
+
+// console.log("Wallet addr: ", wallet.address, wallet);
+const ALCHEMY_URL_GOERLI="yxUVee2fP410o7NSE5lwugJ5G0uBzw0X"
+const testNetwork = {
+  chainId: 5,
+  name: "goerli",
+};
+
+
+
+async function sendTokens() {
+  try{
+
+    const provider = new ethers.providers.AlchemyProvider({
+      5,
+      
+    })
+    console.log("Provider: ", provider)
+    let wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+    
+    const contractInstance = new ethers.Contract(CONTRACT_ADDRESS_GOERLI, abi, wallet );
+
+    console.log("CI: ",contractInstance);
+    const tx = await contractInstance.getBalance();
+    console.log(tx);
+  } catch (error) {
+    console.error(error);
+  }
 }
+
+
 
 // client.on('messageCreate', msg => {
 //   if (msg.content == 'hello bot') {
