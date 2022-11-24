@@ -2,6 +2,7 @@
   "name": "discord-bots",
   "version": "1.0.0",
   "description": "",
+  
   "main": "src/bot.js",
   "scripts": {
     "devStart": "nodemon ./src/bot.js"

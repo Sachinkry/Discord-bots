@@ -1,0 +1,20 @@
+[
+    {
+        "network": "goerli",
+        "chainID": "5",
+        "token": ["eth", "link"],
+        "rpc": "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    {
+        "network": "mumbai",
+        "chainID": "80001",
+        "token": ["matic", "link"],
+        "rpc": "https://rpc-mumbai.matic.today"
+    },
+    {
+        "network": "alfajores",
+        "chainID": "44787",
+        "token": ["celo"],
+        "rpc": "https://celo-alfajores-rpc.allthatnode.com"
+    }
+]

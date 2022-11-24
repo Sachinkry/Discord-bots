@@ -1,22 +1,22 @@
 require("dotenv").config();
-const { 
-  token, 
-  CLIENT_ID,  
-  GUILD_ID,
-  PRIVATE_KEY,
-} = process.env;
+const commands = require("./commands.json");
 
-const { 
-  Client,
-  GatewayIntentBits, 
-  Routes,
-  EmbedBuilder,
-  
-} = require('discord.js');
+const { token, CLIENT_ID, GUILD_ID} = process.env;
+const { Client, GatewayIntentBits, Routes, EmbedBuilder,} = require('discord.js');
 const { REST }  = require('@discordjs/rest')
 
-const { ethers, Wallet } = require('ethers');
-const {abi, CONTRACT_ADDRESS_GOERLI, } = require("../constants/index")
+// contract related
+const abi = require("./abi/abi.json");
+const {PRIVATE_KEY, CONTRACT_ADDRESS_GOERLI, CONTRACT_ADDRESS_MUMBAI, CONTRACT_ADDRESS_ALFAJORES } = process.env;
+const {ethers, Wallet, Contract } = require('ethers');
+const networks = require("./networks.json");
+
+let providerURL="";
+let contractAddress="";
+let network="";
+let testToken="";
+const nativeTokenValue = "0.01"
+
 
 const client = new Client({
   intents: [
@@ -31,68 +31,13 @@ client.on('ready', () => console.log(`${client.user.username} has logged in!,`))
 const rest = new REST({version: '10'}).setToken(token);
 
 async function main() {
-  const commands = [
-    {
-      "name": "faucet",
-      "description": "Get or edit permissions for a user or a role",
-      "options": [
-          {
-              "name": "goerli",
-              "description": "goerli tesnet tokens",
-              "type": 2, // 2 is type SUB_COMMAND_GROUP
-              "options": [
-                  {
-                      "name": "eth",
-                      "description": "Get 1 ETH goerli tesnet tokens",
-                      "type": 1 // 1 is type SUB_COMMAND
-                  },
-                  {
-                      "name": "link",
-                      "description": "Get goerli LINK tokens",
-                      "type": 1
-                  }
-              ]
-          },
-          {
-              "name": "mumbai",
-              "description": "mumbai testnet tokens",
-              "type": 2,
-              "options": [
-                  {
-                      "name": "matic",
-                      "description": "Get 1 MATIC mumbai testnet tokens",
-                      "type": 1
-                  },
-                  {
-                      "name": "link",
-                      "description": "Get mumbai LINK tokens",
-                      "type": 1
-                  }
-              ]
-          },
-          {
-            "name": "alfajores",
-            "description": "celo testnet token",
-            "type": 2, // 2 is type SUB_COMMAND_GROUP
-            "options": [
-                {
-                    "name": "celo",
-                    "description": "Get 1 CELO tesnet tokens",
-                    "type": 1 // 1 is type SUB_COMMAND
-                }
-            ]
-        }
-      ]
-  }
-    
-  ];
   try{
     console.log("Initiating guild commands");
+    
     await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { 
       body: commands,
     });
     client.login(token);
-
     console.log("Successfully initiated!");
   } catch (error){
     console.error(error);
@@ -103,55 +48,79 @@ main();
 
 
 client.on('interactionCreate', async interaction => {
-  const network = interaction.options.getSubcommandGroup();
+  network = interaction.options.getSubcommandGroup();
   const networkName = network.charAt(0).toUpperCase() + network.slice(1);
-  const testToken = interaction.options.getSubcommand();
-  let message = `${testToken == 'link' ? '': 1} ${testToken.toUpperCase()} ${testToken == 'link' ? '(chainlink)' : ''} test tokens transferred to address 0x `
+  testToken = interaction.options.getSubcommand();
+  let message = `${testToken == 'link' ? '': nativeTokenValue} ${testToken.toUpperCase()} ${testToken == 'link' ? '(chainlink)' : ''} test tokens transferred to address ${getReceiverAddress} `
+  sendTokens();
   if (interaction.isChatInputCommand()) {
     interaction.reply({ 
       embeds: [new EmbedBuilder()
-        .setDescription(message)
+        // .setDescription(message)
         .setColor('Aqua')
+        .setThumbnail('https://learnweb3.io/brand/logo-blue.png')
         .setURL("https://goerli.etherscan.io/address/0xf36f155486299ecaff2d4f5160ed5114c1f66000")
         .setTitle(`${networkName} Testnet Token Transfer `)
+        .setFields(
+          {name: 'Value:', value: nativeTokenValue},
+          {name: "From", value: contractAddress, inline: true},
+          {name: "To", value: getReceiverAddress(), inline: true}
+        )
+        
 
       ]
     });
-
-    sendTokens();
+    // sendTokens();
   }
+  
 });
 
-// console.log("Wallet addr: ", wallet.address, wallet);
-const ALCHEMY_URL_GOERLI="yxUVee2fP410o7NSE5lwugJ5G0uBzw0X"
-const testNetwork = {
-  chainId: 5,
-  name: "goerli",
-};
+// sendFunds
 
 
+function getReceiverAddress(){
+  const receiverAddress = "0xf90Ab46798cd69CD5D08addaf803FFAcF4EC7336"
+  return receiverAddress;;
+}
+const getNetworkUrl = async () => {
+  try {
+    if(network == "goerli"){
+      providerURL = "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
+      contractAddress = CONTRACT_ADDRESS_GOERLI;
+    } else if(network == "mumbai"){
+      providerURL = "https://rpc-mumbai.matic.today";
+      contractAddress = CONTRACT_ADDRESS_MUMBAI;
+    } else if(network == "alfajores"){
+      providerURL = "https://celo-alfajores-rpc.allthatnode.com";
+      contractAddress = CONTRACT_ADDRESS_ALFAJORES;
+    }
+    return {providerURL, contractAddress};
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-async function sendTokens() {
-  try{
+const sendTokens = async () => {
+  try {
+    await getNetworkUrl();
+    const provider = new ethers.providers.JsonRpcProvider(providerURL);
+    console.log("providerURL", providerURL);
+    const wallet = new Wallet(PRIVATE_KEY, provider)
+    console.log("address", contractAddress);
+    const contract = new Contract(contractAddress, abi, wallet);
+    //   console.log("contract: ", contract);
+      // const amount = ethers.utils.parseEther(nativeTokenValue).toString();
+      // console.log(amount);
+      // const tx = await contract.transfer("0xf90Ab46798cd69CD5D08addaf803FFAcF4EC7336", amount);
+      // await tx.wait();
+      // console.log("tx: ", tx);
+      // console.log("sent tokens");
 
-    const provider = new ethers.providers.AlchemyProvider({
-      5,
-      
-    })
-    console.log("Provider: ", provider)
-    let wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-    
-    const contractInstance = new ethers.Contract(CONTRACT_ADDRESS_GOERLI, abi, wallet );
-
-    console.log("CI: ",contractInstance);
-    const tx = await contractInstance.getBalance();
-    console.log(tx);
   } catch (error) {
     console.error(error);
   }
 }
-
-
+// sendTokens();
 
 // client.on('messageCreate', msg => {
 //   if (msg.content == 'hello bot') {

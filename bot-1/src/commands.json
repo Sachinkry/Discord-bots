@@ -1,0 +1,57 @@
+[
+    {
+      "name": "faucet",
+      "description": "Get or edit permissions for a user or a role",
+      "options": [
+          {
+              "name": "goerli",
+              "description": "goerli tesnet tokens",
+              "type": 2, 
+              "options": [
+                  {
+                      "name": "eth",
+                      "description": "Get 1 ETH goerli tesnet tokens",
+                      "type": 1 
+                  },
+                  {
+                      "name": "link",
+                      "description": "Get goerli LINK tokens",
+                      "type": 1
+                  }
+              ]
+          },
+          {
+              "name": "mumbai",
+              "description": "mumbai testnet tokens",
+              "type": 2,
+              "options": [
+                  {
+                      "name": "matic",
+                      "description": "Get 1 MATIC mumbai testnet tokens",
+                      "type": 1
+                  },
+                  {
+                      "name": "link",
+                      "description": "Get mumbai LINK tokens",
+                      "type": 1
+                  }
+              ]
+          },
+          {
+            "name": "alfajores",
+            "description": "celo testnet token",
+            "type": 2, 
+            "options": [
+                {
+                    "name": "celo",
+                    "description": "Get 1 CELO tesnet tokens",
+                    "type": 1 
+                }
+            ]
+        }
+      ]
+  }
+]
+  
+
+
