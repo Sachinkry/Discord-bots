@@ -10,7 +10,7 @@
               "options": [
                   {
                       "name": "eth",
-                      "description": "Get 1 ETH goerli tesnet tokens",
+                      "description": "Get ETH goerli tesnet tokens",
                       "type": 1 
                   },
                   {
@@ -27,7 +27,7 @@
               "options": [
                   {
                       "name": "matic",
-                      "description": "Get 1 MATIC mumbai testnet tokens",
+                      "description": "Get MATIC mumbai testnet tokens",
                       "type": 1
                   },
                   {
@@ -44,7 +44,7 @@
             "options": [
                 {
                     "name": "celo",
-                    "description": "Get 1 CELO tesnet tokens",
+                    "description": "Get CELO tesnet tokens",
                     "type": 1 
                 }
             ]
