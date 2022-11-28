@@ -14,7 +14,7 @@ const tesnets = [
             token: "link",
             endpointUrl: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
             contractAddress:"0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
-            value: "20",
+            value: "1",
             blockExplorer: "https://goerli.etherscan.io/tx/",
         },
         {
@@ -30,7 +30,7 @@ const tesnets = [
             token: "link",
             endpointUrl: "https://polygon-mumbai.g.alchemy.com/v2/ivcJQdjhx-71mh0dCV1ILW3yMdG4ojCB",
             contractAddress:"0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
-            value: "20",
+            value: "1",
             blockExplorer: "https://mumbai.polygonscan.com/tx/"
         },
         {

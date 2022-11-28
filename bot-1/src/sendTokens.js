@@ -32,6 +32,7 @@ const sendTokens = async (testnetName, testToken) => {
     const wallet = new Wallet(PRIVATE_KEY, provider);
     
     const contract = new Contract(testnetObj.contractAddress, abi, wallet);
+    console.log("contract: ", contract)
     const tx = await contract.transfer(receiverAddress, amount);
     await tx.wait();
 
@@ -45,6 +46,7 @@ const sendTokens = async (testnetName, testToken) => {
 
   } catch (error) {
     console.error(error);
+    return error
   }
 }
 
