@@ -21,6 +21,7 @@ const getNetworkInfo = (testnetName, testToken) => {
 
 
 // function to send native tokens to the receiver addresss
+// returns an object with some properties
 const sendTokens = async (testnetName, testToken) => {
   try {
     const testnetObj = getNetworkInfo(testnetName, testToken);
@@ -28,10 +29,14 @@ const sendTokens = async (testnetName, testToken) => {
     const amount = ethers.utils.parseEther(testnetObj.value).toString();
     console.log(testnetObj);
 
+    // get provider
     const provider = new ethers.providers.JsonRpcProvider(testnetObj.endpointUrl);
+    // get private key
     const wallet = new Wallet(PRIVATE_KEY, provider);
     
+    // create a contract instance
     const contract = new Contract(testnetObj.contractAddress, abi, wallet);
+    // call the funstion in the smart contract
     const tx = await contract.transfer(receiverAddress, amount);
     await tx.wait();
 
@@ -39,6 +44,7 @@ const sendTokens = async (testnetName, testToken) => {
     const txnHash = tx.hash;
     const network = testnetObj.name;
     const blockExplorer = testnetObj.blockExplorer;
+    // append 'value' + 'testToken' => 1 ETH 
     const tokenName = `${testnetObj.value} ${(testnetObj.token).toUpperCase()}`;
 
     return {txnHash, network, blockExplorer, tokenName,receiverAddress};
@@ -49,6 +55,7 @@ const sendTokens = async (testnetName, testToken) => {
   }
 }
 
+// get faucet balance
 const getFaucetBalance = async (testnetName, testToken) => {
   try {
     const testnetObj = getNetworkInfo(testnetName, testToken);

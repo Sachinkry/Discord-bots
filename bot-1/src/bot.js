@@ -49,9 +49,7 @@ client.on('interactionCreate', async interaction => {
   const userId = interaction.member.user.id;    // Id of the user who sent the command
 
   // 1. check if there's a user with the given id, network and token
-  // const checkIfUserExists = await findUser(userId, testnetName, testToken);
   // 2. if no, create a new user with the given id, network and token in the database
-  // const user = checkIfUserExists ? checkIfUserExists 
   // 3. if yes, check if the user has withdrawn this token in the last 24 hours
   // 4. if yes , send a message to the user that they have already withdrawn this token in the last 24 hours
   // 5. if no, send the tokens to the user and update the last withdrawal time in the database
@@ -69,9 +67,12 @@ client.on('interactionCreate', async interaction => {
         ]
       })
 
+      // get faucet balance
       const faucetBalance = await getFaucetBalance(testnetName, testToken);
       console.log("faucetBal: ", faucetBalance);
-      // wait for transaction to be mined and return the transaction hash
+      
+      // connect with database and add user if not added already
+      // returns 1 or 2 or {timeLeft, num: 3}
       const createOrUpdateUser = await mainDBFunction(userId, testnetName, testToken);
       console.log("creadfdf: ", createOrUpdateUser);
 
@@ -79,6 +80,7 @@ client.on('interactionCreate', async interaction => {
         const txnInfo = await sendTokens(testnetName, testToken );
         console.log(txnInfo);
         // edit reply with transaction hash and other info
+        // this would be sent to discord-user if a transactin is mined and funds are transferred
         await interaction.editReply({
             embeds: [new EmbedBuilder()
               .setColor("Blue")
@@ -92,13 +94,14 @@ client.on('interactionCreate', async interaction => {
               .setTimestamp()
               ]
             })
+
       } else if (createOrUpdateUser.num === 3){
-        console.log("bhsdk");
+        // this would be sent to user if cooldown is still there for a given user, network and token
         await interaction.editReply({
            
           embeds: [new EmbedBuilder()
-            .setColor("Yellow")
-            .setTitle(`You have already withdrawn ${testToken.toUpperCase()} test tokens in the last 24 hours`)
+            .setColor("DarkGold")
+            .setTitle(`The funds are available once every 24 hours.`)
             .setThumbnail("https://gateway.pinata.cloud/ipfs/QmPuCLXQa8XPkYprXgAY26e4ou3fdXMcshZUJ3zGDuRoqD")
             .addFields(
               {name: "NEXT WITHDRAWAL", value: `In ${createOrUpdateUser.timeLeftInHours} hours`, inline: true},
