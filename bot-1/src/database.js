@@ -39,10 +39,11 @@ async function mainDBFunction(userId, testnetName, testToken) {
                 const timeLeft = cooldownDuration - (Date.now() - lastWithdrawalTimestamp);
 
                 const hours = Math.floor(timeLeft / (60*60*1000));
-                const minutes = Math.floor((timeLeft % (60*60*60)) / (60*1000));
+                const minutes = Math.floor((timeLeft % (60*60*1000)) / (60*1000));
+                console.log(hours, minutes);
 
                 // get time left in (hh:mm) format
-                const timeLeftInHours = `${hours.toLocaleString(undefined, {minimumIntegerDigits: 2})}:${minutes.toLocaleString(undefined, {minimumIntegerDigits: 2})}`
+                const timeLeftInHours = `${hours}:${minutes < 10 ? "0" + minutes: minutes }`
 
                 const num = 3
 
