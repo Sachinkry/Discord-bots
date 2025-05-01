@@ -1,6 +1,9 @@
 ## LW-3 Faucet Bot: 
 The Faucet Bot makes sending funds easier than ever before. All you have to do is type the command `/faucet` followed by the `<network>`  and the `<token>` you wish to receive.
 
+### Demo:
+https://user-images.githubusercontent.com/97998435/204553777-5b3d510c-b721-4e61-a9f9-082bd95f9ce7.mp4
+
 On selecting/typing one of the commands:-
 `/faucet goerli eth`
 `/faucet goerli link`
@@ -22,10 +25,6 @@ ATLAS_DB_USER=<ATLAS_CLUSTER_NAME>
 ATLAS_DB_PASSWORD=<ATLAS_USER_PASSWORD>  // from the database user section
 ```
 4. Run `npm run devStart` in `bot-1` directory to install the necessary dependencies
-
-### Video:
-https://user-images.githubusercontent.com/97998435/204553777-5b3d510c-b721-4e61-a9f9-082bd95f9ce7.mp4
-
 
 ### Some important files
 1. `bot.js` : contains the command and reply logic. And calling database or send token functions
